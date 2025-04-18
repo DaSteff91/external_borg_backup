@@ -1,6 +1,16 @@
 # BorgBackup System with Local Queue
 
-This system provides encrypted, deduplicated backups with offline capability. Backups are first created locally, then automatically synced to a remote server when connectivity is available.
+This setup provides encrypted, deduplicated backups with offline capability from a local system to a remote one using ssh connection and borg as backup tool. It uses systemd services and timers to run everything smoothly in the background once setup correctly. By default, the script tries to sync the backup to the server. In case there is no internet connection a temporary backup is stored which will be synced in case the connection to the server is restored.
+
+## File overview:
+
+borg-backup.service: Executes the backup script when triggered by the timer
+borg-backup.timer: Can be adjusted to run a backup whenever needed. Default: At 10 pm system time or after booting
+borg_backup.sh: Checks for server connection and runs backup mode accordingly
+
+borg-sync-queue.service: Executes the backup sync script when triggered by the timer
+borg-sync-queue.timer Can be adjusted to run a sync loop whenever needed. Default: After booting the system
+borg_sync_queue.sh: Sync all pending backups via a temporay mountpoint to the external repo
 
 ## System Components
 
@@ -20,7 +30,7 @@ sudo apt update
 sudo apt install borgbackup fuse3 sshfs
 ```
 
-### 2. Setup Backup Repository
+### 2. Setup Backup Borg Repository
 
 _On backup server:_
 
