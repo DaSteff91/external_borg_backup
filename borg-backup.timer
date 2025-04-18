@@ -1,0 +1,12 @@
+[Unit]
+Description=Run Borg Backup Daily
+
+[Timer]
+OnCalendar=22:00
+Persistent=true
+RandomizedDelaySec=30m
+OnBootSec=10min
+WakeSystem=true
+
+[Install]
+WantedBy=timers.target

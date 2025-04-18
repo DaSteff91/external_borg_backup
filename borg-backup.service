@@ -1,0 +1,44 @@
+[Unit]
+Description=Borg Backup
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+# Configurable environment variables
+Environment="BORG_RSH=ssh -i /path/to/ssh/key"
+Environment="CREDENTIALS_FILE=/etc/borg/crypted_password.cred"
+Environment="BORG_RELOCATED_REPO_ACCESS_IS_OK=yes"
+Environment="BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes"
+Environment="SSH_AUTH_SOCK=/run/user/%U/keyring/ssh"
+Environment="LOG_DIR=/var/log/borg"
+
+# SSH agent setup (replace /path/to/ssh/key with actual path)
+ExecStartPre=/bin/sh -c 'eval $(ssh-agent) && ssh-add /path/to/ssh/key'
+ExecStart=/usr/local/bin/borg_backup.sh
+
+# Security hardening
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictRealtime=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallFilter=@system-service
+SystemCallArchitectures=native
+PrivateDevices=yes
+PrivateUsers=yes
+RemoveIPC=yes
+RestrictSUIDSGID=yes
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH CAP_CHOWN CAP_FOWNER CAP_FSETID CAP_SETGID CAP_SETUID CAP_SYS_ADMIN
+
+# Required write paths
+ReadWritePaths=/root/.config/borg /root/.cache/borg /var/log/borg /var/borg
+
+[Install]
+WantedBy=multi-user.target

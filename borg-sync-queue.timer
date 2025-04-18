@@ -1,0 +1,9 @@
+[Unit]
+Description=Sync Local Backups Hourly
+
+[Timer]
+OnBootSec=5m
+# Run 5 minutes after boot
+
+[Install]
+WantedBy=timers.target

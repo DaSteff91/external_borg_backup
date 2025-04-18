@@ -1,0 +1,14 @@
+[Unit]
+Description=Borg Backup (Sync Local Queue to Remote)
+After=network-online.target
+Requires=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/bin/borg-sync-queue.sh
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target
